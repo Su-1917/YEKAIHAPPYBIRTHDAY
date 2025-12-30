@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>烨凯20岁生日快乐！<title>
+    <!-- 引入 Lenis 库用于惯性滚动 -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;400;600;800&family=Playfair+Display:ital,wght@0,400;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --tiffany: #17cec8; --pink: #ff69b4; --gold: #ffd700; --red: #ff4d4d;
+            --c1: var(--tiffany); --c2: var(--pink); --c3: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.12);
+        }
+
+        /* --- 基础设置 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        
+        html, body {
+            background-color: #000; 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            overflow-x: hidden; 
+            height: 300vh; 
+            overscroll-behavior: none;
+        }
+
+        /* --- 1. 背景动画层 --- */
+        .bg-canvas { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            z-index: 0; 
+            background: #000; 
+            overflow: hidden; 
+            pointer-events: none;
+        }
+        .orb { 
+            position: absolute; width: 130vw; height: 130vw; border-radius: 50%; 
+            filter: blur(100px); opacity: 0.6; mix-blend-mode: screen; 
+            will-change: transform; transition: opacity 2s; 
+        }
+        .orb-1 { background: radial-gradient(circle, var(--c1) 0%, transparent 70%); top: -40%; left: -30%; }
+        .orb-2 { background: radial-gradient(circle, var(--c2) 0%, transparent 70%); bottom: -40%; right: -30%; }
+        .orb-3 { background: radial-gradient(circle, var(--c3) 0%, transparent 70%); top: 10%; left: 10%; }
+
+        /* --- 2. Apple 风格开屏页 --- */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 100000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+        }
+        
+        .apple-glow-bg {
+            position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--tiffany), var(--pink), transparent 60%);
+            filter: blur(80px); opacity: 0.3;
+            animation: breathing-glow 6s infinite alternate ease-in-out;
+            z-index: -1;
+        }
+        @keyframes breathing-glow {
+            0% { transform: scale(0.8); opacity: 0.2; }
+            100% { transform: scale(1.1); opacity: 0.4; }
+        }
+
+        .hero-number { position: relative; margin-bottom: 20px; }
+        .number-mask {
+            font-family: 'Inter', sans-serif; font-size: 12rem; font-weight: 800; 
+            line-height: 1; letter-spacing: -10px;
+            background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.2) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-box-reflect: below -20px linear-gradient(transparent, rgba(0,0,0,0.2));
+            animation: hero-float 4s ease-in-out infinite alternate;
+        }
+        @keyframes hero-float {
+            0% { transform: translateY(0); filter: drop-shadow(0 0 20px rgba(255,255,255,0.1)); }
+            100% { transform: translateY(-10px); filter: drop-shadow(0 0 40px rgba(23, 206, 200, 0.4)); }
+        }
+
+        .update-info { text-align: center; margin-bottom: 50px; z-index: 10; }
+        .update-title { font-weight: 600; font-size: 1.5rem; margin-bottom: 5px; letter-spacing: 1px; }
+        .update-desc { font-weight: 300; font-size: 0.9rem; color: rgba(255, 255, 255, 0.5); letter-spacing: 0.5px; }
+
+        .apple-btn {
+            border-radius: 100px; padding: 18px 50px; font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px); color: #fff; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .apple-btn:hover { background: #fff; color: #000; transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 255, 255, 0.4); }
+
+        /* --- 3. 主内容区域 --- */
+        .section { 
+            height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center; 
+            padding: 40px; text-align: center; position: relative; z-index: 10; 
+        }
+        #time-display { font-size: clamp(3rem, 12vw, 7.5rem); font-weight: 100; letter-spacing: -2px; }
+        #date-display { letter-spacing: 10px; opacity: 0.5; margin-bottom: 10px; }
+
+        .hub-grid { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 450px; }
+        .btn-hub {
+            background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid var(--border);
+            padding: 35px; border-radius: 30px; color: #fff; cursor: pointer; transition: 0.4s;
+        }
+        .btn-hub:hover { border-color: #fff; transform: scale(1.02); background: rgba(255,255,255,0.08); }
+        .btn-hub h4 { font-family: 'Playfair Display'; font-size: 1.8rem; font-style: italic; letter-spacing: 2px; }
+
+        /* --- 4. 灵动岛核心 --- */
+        .island-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 999999; perspective: 1000px; }
+        .dynamic-island {
+            width: 150px; height: 35px; background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 25px; border: 0.5px solid rgba(255, 255, 255, 0.15);
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor: pointer; position: relative;
+        }
+        .dynamic-island::before {
+            content: ''; position: absolute; inset: -4px; border-radius: 30px;
+            background: linear-gradient(135deg, #17cec8, #4facfe, #ff69b4, #7000ff, #17cec8);
+            background-size: 300% 300%; z-index: -1; opacity: 0.5; filter: blur(12px);
+            animation: aurora-slow-flow 15s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+        }
+        @keyframes aurora-slow-flow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+        
+        .dynamic-island.expanded { width: 380px; height: 75px; }
+
+        .island-content { display: none; align-items: center; gap: 12px; white-space: nowrap; opacity: 0; }
+        .island-idle { display: flex !important; opacity: 1 !important; } 
+        
+        .island-text { font-size: 0.7rem; font-weight: 600; letter-spacing: 2px; color: #fff; }
+        .island-dot { width: 6px; height: 6px; background: var(--tiffany); border-radius: 50%; box-shadow: 0 0 10px var(--tiffany); }
+        
+        @keyframes note-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .music-playing { animation: note-rotate 3s linear infinite !important; }
+        #island-music-note { transition: opacity 0.3s ease !important; }
+
+        /* 切歌按钮样式 */
+        #island-next-track { 
+            font-size: 1.2rem; cursor: pointer; width: 30px; height: 30px; 
+            display: flex; align-items: center; justify-content: center; 
+            transition: transform 0.2s; opacity: 0.8;
+        }
+        #island-next-track:hover { transform: scale(1.2); opacity: 1; }
+
+        .auto-flow-dot {
+            background: radial-gradient(circle at 30% 30%, #17cec8, #ff69b4, #FFD700, #7000ff);
+            background-size: 250% 250%; animation: aurora-ball-flow 5s ease infinite alternate;
+            border-radius: 50% !important; border: none !important;
+        }
+        @keyframes aurora-ball-flow { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
+        .theme-dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease; flex-shrink: 0; }
+        .theme-dot.active { border-color: #ffffff !important; transform: scale(1.15); }
+
+        /* --- 5. 全息 3D 照片卡片 --- */
+        .photo-grid-container {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px;
+            width: 100%; max-width: 800px; margin: 80px auto; padding: 20px;
+        }
+        .photo-card {
+            height: 200px; background-color: rgba(255,255,255,0.05); border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1); background-size: cover; background-position: center;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); cursor: pointer; position: relative; overflow: hidden;
+            transform-style: preserve-3d;
+        }
+        .photo-card::after {
+            content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-25deg); transition: 0.5s;
+        }
+        .photo-card:hover {
+            transform: translateY(-10px) scale(1.02) rotateX(5deg) rotateY(5deg);
+            border-color: var(--tiffany); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(23, 206, 200, 0.2); z-index: 10;
+        }
+        .photo-card:hover::after { left: 150%; transition: 0.7s ease-in-out; }
+        .photo-card span {
+            position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.6);
+            padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; pointer-events: none;
+        }
+
+        /* --- 6. 蛋糕与文字 --- */
+        .cake-container { position: relative; width: 320px; height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+        .cake-top { width: 200px; height: 75px; background: rgba(255,255,255,0.2); border: 1px solid var(--border); border-radius: 50%; margin: 0 auto; position: relative; z-index: 10; }
+        .cake-side { 
+            width: 200px; height: 110px; background: linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.02)); 
+            border-left: 1px solid var(--border); border-right: 1px solid var(--border); margin: -38px auto 0; position: relative; z-index: 9; display: flex; justify-content: center; align-items: center; 
+        }
+        .cake-num { font-size: clamp(3rem, 15vw, 5.5rem); }
+        .cake-bottom { width: 200px; height: 75px; background: rgba(255,255,255,0.08); border: 1px solid var(--border); border-radius: 50%; margin: -38px auto 0; position: relative; z-index: 8; }
+        .candle { width: 12px; height: 60px; background: #fff; border-radius: 6px; position: absolute; top: -35px; left: 50%; transform: translateX(-50%); z-index: 15; }
+        .flame { 
+            width: 26px; height: 40px; background: #fff; border-radius: 50% 50% 20% 20%; position: absolute; left: 50%; top: -48px; transform: translateX(-50%); 
+            filter: blur(4px); box-shadow: 0 0 40px #fff; animation: flicker 0.1s infinite alternate; transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .hbd-text { 
+            font-family: 'Playfair Display', serif; font-size: clamp(3rem, 12vw, 6.5rem);
+            line-height: 1.4; padding: 20px 20px 40px 20px; margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--c1), var(--c2), var(--c1)); background-size: 200% auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+            animation: gradient-flow 3s linear infinite; display: inline-block; width: 100%;
+        }
+        @keyframes gradient-flow { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+        /* --- 7. 弹窗与表单 --- */
+        .overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
+            z-index: 50000; display: none; opacity: 0; padding: 40px; overflow-y: auto; 
+        }
+        /* 确保动画舞台层级正确 */
+        #anim-stage { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            pointer-events: none; z-index: 50001; 
+            display: flex; justify-content: center; align-items: center; 
+        }
+        
+        #wish-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(60px); -webkit-backdrop-filter: blur(60px);
+            z-index: 90000; display: none; opacity: 0; justify-content: center; align-items: center; flex-direction: column;
+        }
+        #wish-input {
+            width: 85%; max-width: 600px;
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px; padding: 25px; color: #fff;
+            font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 5vw, 2.5rem);
+            text-align: center; outline: none; margin-bottom: 50px;
+            transition: all 0.5s; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        #wish-input:focus {
+            background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.5);
+            border-bottom-color: var(--tiffany); box-shadow: 0 0 50px rgba(23, 206, 200, 0.3); transform: scale(1.02);
+        }
+        
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff; padding: 22px 60px; border-radius: 50px; font-size: 0.9rem; letter-spacing: 4px;
+            font-weight: 600; cursor: pointer; transition: all 0.4s; text-transform: uppercase;
+        }
+        .btn-glass:hover { background: #fff; color: #000; transform: translateY(-3px); }
+
+        #finale-wrapper { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; opacity: 0; width: 100%; height: 100%; }
+
+        /* --- 8. 动画元素样式 (确保存在) --- */
+        .env-wrapper { position: relative; width: 300px; height: 200px; perspective: 1000px; }
+        .anim-envelope-back { width: 100%; height: 100%; background: var(--c1); position: absolute; border-radius: 0 0 10px 10px; z-index: 1; }
+        .anim-envelope-front { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background: var(--c1); border-radius: 0 0 10px 10px; clip-path: polygon(0 35%, 100% 35%, 100% 100%, 0 100%); z-index: 3; filter: brightness(0.95); }
+        .anim-flap { position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 150px solid transparent; border-right: 150px solid transparent; border-top: 110px solid var(--c1); transform-origin: top; z-index: 4; }
+        .anim-letter { width: 260px; height: 180px; background: #fafafa; position: absolute; left: 20px; top: 10px; z-index: 2; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        .anim-book { width: 220px; height: 300px; position: relative; perspective: 1500px; transform-style: preserve-3d; }
+        .anim-cover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, var(--c1), var(--c2)); border-radius: 5px 15px 15px 5px; transform-origin: left; z-index: 10; display: flex; justify-content: center; align-items: center; font-family: 'Playfair Display'; font-size: 2.5rem; color: #fff; }
+        .anim-page-stack { position: absolute; top: 5px; left: 5px; width: 210px; height: 290px; background: linear-gradient(to right, #eee, #fff); border-radius: 3px 12px 12px 3px; z-index: 5; }
+        
+        .anim-candle { width: 22px; height: 130px; background: linear-gradient(to bottom, var(--c2), var(--c1)); border-radius: 11px; position: relative; }
+        .anim-flame { width: 45px; height: 65px; background: radial-gradient(#fff, #ff4d4d); border-radius: 50% 50% 20% 20%; position: absolute; left: 50%; top: -75px; transform: translateX(-50%); filter: blur(4px); box-shadow: 0 0 50px #ff4d4d; animation: flicker 0.1s infinite alternate; }
+
+        /* --- 9. 图片查看器样式 --- */
+        #image-viewer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 200000;
+            display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
+            cursor: zoom-out;
+        }
+        #image-viewer img {
+            max-width: 90%; max-height: 90%;
+            border-radius: 8px; box-shadow: 0 0 50px rgba(255,255,255,0.1);
+            transform: scale(0.9); transition: transform 0.3s ease;
+            object-fit: contain;
+        }
+        #image-viewer.active { opacity: 1; }
+        #image-viewer.active img { transform: scale(1); }
+
+        /* --- 10. 吹气提示样式 --- */
+        #blow-hint {
+            position: fixed; top: 70%; left: 50%; transform: translateX(-50%);
+            font-size: 1.1rem; color: #fff; z-index: 99999; 
+            text-shadow: 0 0 10px var(--tiffany); pointer-events: none;
+            opacity: 0; transition: opacity 0.5s; text-align: center;
+            background: rgba(0,0,0,0.5); padding: 15px 30px; border-radius: 30px;
+            backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 768px) { .dynamic-island { transform: scale(0.9); } }
+    </style>
+</head>
+<body>
+    
+    <!-- 1. 灵动岛 -->
+    <div class="island-container">
+        <div class="dynamic-island" id="dynamic-island" onclick="toggleMusic(event)">
+            <div class="island-content island-idle">
+                <span class="island-dot"></span>
+                <span class="island-text">生日快乐</span>
+            </div>
+            <!-- 切歌按钮 -->
+            <div class="island-content island-music" style="justify-content: space-between; width: 100%; padding: 0 20px;">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <div id="island-music-note" onclick="controlMusic(event)" style="font-size: 1.5rem; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">🎵</div>
+                    <div id="island-next-track" onclick="switchTrack(event)" title="下一首">⏭️</div>
+                </div>
+                
+                <div class="theme-grid" style="display: flex; gap: 8px; align-items: center;">
+                    <div class="theme-dot auto-flow-dot active" onclick="setAutoFlow(event)"></div>
+                    <div class="theme-dot" onclick="setTheme('#17cec8', '#ff69b4', event)" style="background: #17cec8;"></div>
+                    <div class="theme-dot" onclick="setTheme('#FFD700', '#8B0000', event)" style="background: #FFD700;"></div>
+                    <div class="theme-dot" onclick="setTheme('#7000ff', '#0abab5', event)" style="background: #7000ff;"></div>
+                    <div class="theme-dot" onclick="setTheme('#87CEEB', '#00BFFF', event)" style="background: #87CEEB;"></div>
+                    <div class="theme-dot" onclick="setTheme('#da22ff', '#9733ee', event)" style="background: #da22ff;"></div>
+                </div>
+            </div>
+            <div class="island-content island-wishing">
+                <span style="color: #FFD700;">✨</span>
+                <span style="font-size: 0.7rem; letter-spacing: 2px;">WISHING...</span>
+            </div>
+            <!-- 提示状态：用于显示切歌提示 -->
+            <div class="island-content island-alert">
+                <span style="color: var(--tiffany);" id="alert-icon">✦</span>
+                <span style="font-size: 0.7rem; letter-spacing: 1px;" id="alert-text">WISH RECEIVED</span>
+            </div>
+            <div class="island-content island-levelup">
+                <span style="color: #00FF00;">🆙</span>
+                <span style="font-size: 0.7rem; letter-spacing: 1px;">SYSTEM LEVEL 20</span>
+            </div>
+            <div class="island-content island-message">
+                <span style="color: #fff;">📩</span>
+                <span style="font-size: 0.7rem; letter-spacing: 1px;">NEW MEMORY UNLOCKED</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 背景与音乐 -->
+    <div class="bg-canvas">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <audio id="bgMusic" loop preload="auto">
+        <source src="" type="audio/mpeg">
+    </audio>
+
+    <!-- 3. 开屏页 -->
+    <div id="intro-screen">
+        <div class="apple-glow-bg"></div>
+        <div class="hero-number"><div class="number-mask">20</div></div>
+        <div class="update-info">
+            <h2 class="update-title">男神OS 20.0</h2>
+            <p class="update-desc">Ready to Install</p>
+        </div>
+        <button class="apple-btn" onclick="startJourney()">Update Now</button>
+    </div>
+
+    <!-- 4. 主内容 -->
+    <section class="section">
+        <div class="clock-container">
+            <div id="date-display">2025.12.30</div>
+            <div id="time-display">00:00:00</div>
+            <div id="day-of-week" style="letter-spacing: 15px; font-size: 0.8rem; color: var(--tiffany); margin-top: 15px;">TUESDAY</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="hub-grid">
+            <div class="btn-hub" onclick="openOverlay('memoirs')"><h4>Memoirs</h4><span>时光博物馆</span></div>
+            <div class="btn-hub" onclick="openOverlay('messages')"><h4>Greetings</h4><span>好友的寄语</span></div>
+            <div class="btn-hub" onclick="openOverlay('wishes')"><h4>Wishes</h4><span>愿望收集箱</span></div>
+        </div>
+    </section>
+
+    <section class="section" id="ceremony-sec">
+        <div id="ceremony-content">
+            <div class="cake-container">
+                <div class="cake-body">
+                    <div class="cake-top"><div class="candle"><div class="flame" id="flame"></div></div></div>
+                    <div class="cake-side"><div class="cake-num">20</div></div>
+                    <div class="cake-bottom"></div>
+                </div>
+            </div>
+            <div style="margin-top: 60px;"><button class="btn-glass" onclick="showWishScreen('birthday')">许下生日愿望</button></div>
+        </div>
+        
+        <div id="finale-wrapper">
+            <div class="hbd-text" id="final-title">Happy Birthday.</div>
+            <div id="final-subtitle" style="margin-bottom:40px; opacity:0.6; letter-spacing:5px;">20 岁的第一周，就是新年的开始</div>
+            
+            <div id="egg-zone" style="opacity: 0; transform: translateY(20px);">
+                <div style="font-size: 0.7rem; letter-spacing: 8px; margin-bottom: 20px; color: #FFFF00;">DETECTING NEW YEAR SIGNAL...</div>
+                <button class="btn-glass" style="border-color: #FFFF00; color: #FFFF00;" onclick="showWishScreen('newyear')">解锁新年愿望</button>
+            </div>
+
+            <div id="restart-zone" style="display: none; margin-top: 20px;">
+                <button class="btn-glass" onclick="location.reload()">RESTART JOURNEY</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 弹窗 -->
+    <div id="overlay" class="overlay">
+        <div style="position:fixed; top:40px; right:40px; cursor:pointer; opacity: 0.8; letter-spacing: 2px; z-index: 50002;" onclick="closeOverlay()">[ CLOSE ]</div>
+        <!-- 动画舞台 -->
+        <div id="anim-stage"></div>
+        <!-- 文字内容 -->
+        <div id="overlay-content"></div>
+    </div>
+
+    <div id="wish-screen">
+        <h2 id="wish-title" style="font-weight: 100; letter-spacing: 15px; margin-bottom: 40px; opacity: 0.7;">MAKE A WISH</h2>
+        <input type="text" id="wish-input" placeholder="..." autocomplete="off">
+        <button class="btn-glass" id="wish-submit-btn">寄出愿望</button>
+    </div>
+
+    <div id="image-viewer" onclick="closeImageViewer()">
+        <img id="image-viewer-img" src="" alt="Zoomed Photo">
+    </div>
+
+    <div id="blow-hint">请对着麦克风吹气...</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        gsap.ticker.fps(120); 
+        gsap.registerPlugin(ScrollTrigger);
+
+        /* ==============================================================
+           ★ 用户自定义配置区域 ★
+           ============================================================== */
+        const USER_CONFIG = {
+            info: {
+                name: "邓烨凯",
+                age: 20,
+                // 注：下方的日期仅用于年龄等计算参考，实际显示已改为实时日期
+                birthDate: "2025-12-30", 
+                introTitle: "男神OS 20.0",
+                introDesc: "Ready to Install"
+            },
+            
+            media: {
+                // 音乐列表：请在这里填入你的音乐文件名
+                music: [
+                    { title: "Track 1", src: "music.mp3" },
+                    { title: "Track 2", src: "music2.mp3" },
+                    { title: "Track 3", src: "music3.mp3" }
+                ],
+                photos: [
+                    { src: "photo1.jpg", text: "超绝氛围感" },
+                    { src: "photo2.jpg", text: "依旧氛围感" },
+                    { src: "photo3.jpg", text: "东中氛围感" }
+                ]
+            },
+
+            text: {
+                friendGreeting: `烨凯生日快乐!!!
+                前年你亲自跟我说今天你生日，可惜当时在东中来不及准备什么，但去年居然忘记了你生日，今年一定不会忘了～
+                嘿嘿，我不会告诉你一星期前我就在准备这玩意了，（疯狂调教AI）
+                希望你收到这份小礼物时不会太晚，技术不够，略显粗糙，也希望你喜欢~
+                几个月未见，甚是想念，迫不及待再一起出去玩了!
+                男神二十岁更帅一步!2026天天开心～
+                我们寒假见!
+                         ———— B+`,
+                defaultBirthdayWishes: [],
+                defaultNewYearWishes: [],
+                finalTitle: "Happy Birthday",
+                finalSubtitle: "20 岁的第一周，就是新年的开始",
+                newYearUnlockText: "DETECTING NEW YEAR SIGNAL..."
+            }
+        };
+
+
+        // --- 1. 初始化逻辑 ---
+        const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), direction: 'vertical', smooth: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+        
+        let birthdayWishes = USER_CONFIG.text.defaultBirthdayWishes;
+        let newYearWishes = USER_CONFIG.text.defaultNewYearWishes;
+        let isScrollFlow = true; 
+        
+        // 音乐状态
+        let currentMusicIndex = 0;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelector(".cake-num").innerText = USER_CONFIG.info.age;
+            document.querySelector(".number-mask").innerText = USER_CONFIG.info.age;
+            document.querySelector(".update-title").innerText = USER_CONFIG.info.introTitle;
+            document.querySelector(".update-desc").innerText = USER_CONFIG.info.introDesc;
+            
+            // 初始化第一首音乐
+            initMusic();
+
+            document.getElementById('final-title').innerText = USER_CONFIG.text.finalTitle;
+            document.getElementById('final-subtitle').innerText = USER_CONFIG.text.finalSubtitle;
+        });
+
+        // --- 2. 实时时钟 (自动更新日期和时间) ---
+        function updateClock() {
+            const now = new Date();
+            // 更新时间
+            const timeDisplay = document.getElementById('time-display');
+            if(timeDisplay) timeDisplay.innerText = now.toTimeString().split(' ')[0];
+            
+            // 更新日期 (YYYY.MM.DD)
+            const dateDisplay = document.getElementById('date-display');
+            if (dateDisplay) {
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                dateDisplay.innerText = `${year}.${month}.${day}`;
+            }
+
+            // 更新星期
+            const dayDisplay = document.getElementById('day-of-week');
+            if (dayDisplay) {
+                const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+                dayDisplay.innerText = days[now.getDay()];
+            }
+        }
+        setInterval(updateClock, 1000); updateClock(); 
+
+        // --- 3. 音乐控制 ---
+        function initMusic() {
+            const audio = document.getElementById('bgMusic');
+            if(audio && USER_CONFIG.media.music.length > 0) {
+                audio.src = USER_CONFIG.media.music[0].src;
+            }
+        }
+
+        function controlMusic(e) {
+            if(e) e.stopPropagation();
+            const audio = document.getElementById('bgMusic');
+            const noteIcon = document.getElementById('island-music-note');
+            
+            if (audio.paused) {
+                audio.play().catch(e => console.log("Play failed", e));
+                noteIcon.classList.add('music-playing'); 
+                noteIcon.style.transform = 'none'; 
+            } else {
+                audio.pause();
+                const style = window.getComputedStyle(noteIcon);
+                const matrix = style.getPropertyValue('transform');
+                noteIcon.classList.remove('music-playing');
+                noteIcon.style.transform = matrix !== 'none' ? matrix : 'none';
+            }
+        }
+
+        function switchTrack(e) {
+            if(e) e.stopPropagation();
+            const audio = document.getElementById('bgMusic');
+            const noteIcon = document.getElementById('island-music-note');
+            
+            // 切换索引
+            currentMusicIndex = (currentMusicIndex + 1) % USER_CONFIG.media.music.length;
+            const nextTrack = USER_CONFIG.media.music[currentMusicIndex];
+            
+            // 换源并播放
+            audio.src = nextTrack.src;
+            audio.play().then(() => {
+                noteIcon.classList.add('music-playing');
+                noteIcon.style.transform = 'none'; 
+            }).catch(err => console.log("Switch play error", err));
+
+            // 灵动岛提示当前歌曲
+            const alertText = document.getElementById('alert-text');
+            const alertIcon = document.getElementById('alert-icon');
+            alertText.innerText = `NOW PLAYING: ${nextTrack.title}`;
+            alertIcon.innerText = "🎵";
+            transformIsland('alert');
+        }
+
+        // --- 4. 滚动变色 ---
+        const themeColors = [
+            { c1: '#17cec8', c2: '#ff69b4' }, { c1: '#FFD700', c2: '#8B0000' }, 
+            { c1: '#7000ff', c2: '#0abab5' }, { c1: '#87CEEB', c2: '#00BFFF' }, { c1: '#da22ff', c2: '#9733ee' }
+        ];
+
+        function updateBgByScroll() {
+            if (!isScrollFlow) return; 
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            if (scrollHeight <= 0) return;
+            const scrollPct = scrollTop / scrollHeight;
+            const index = Math.min(Math.floor(scrollPct * (themeColors.length - 1)), themeColors.length - 2);
+            const ratio = (scrollPct * (themeColors.length - 1)) - index;
+            const start = themeColors[index];
+            const end = themeColors[index+1];
+
+            if(start && end) {
+                gsap.to(":root", {
+                    duration: 1.5, ease: "power1.out",
+                    onUpdate: function() {
+                        const mixedC1 = gsap.utils.interpolate(start.c1, end.c1, ratio);
+                        const mixedC2 = gsap.utils.interpolate(start.c2, end.c2, ratio);
+                        document.documentElement.style.setProperty('--c1', mixedC1);
+                        document.documentElement.style.setProperty('--c2', mixedC2);
+                    }
+                });
+            }
+        }
+        window.addEventListener('scroll', updateBgByScroll);
+
+        function setAutoFlow(e) { if(e) e.stopPropagation(); isScrollFlow = true; updateActiveDot(e.target); updateBgByScroll(); }
+        function setTheme(color1, color2, e) {
+            if(e) { e.preventDefault(); e.stopPropagation(); }
+            isScrollFlow = false; updateActiveDot(e.target);
+            gsap.to(":root", { "--c1": color1, "--c2": color2, duration: 1.5, ease: "power2.inOut" });
+        }
+        function updateActiveDot(target) {
+            document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+            if(target) target.classList.add('active');
+        }
+
+        // --- 5. 灵动岛总控 ---
+        function toggleMusic(e) {
+            const audio = document.getElementById('bgMusic');
+            const island = document.getElementById('dynamic-island');
+            
+            // 点击灵动岛主体时的逻辑
+            if (island.classList.contains('expanded')) {
+                 // 如果已经是展开的，且不是在播放音乐状态，则收起（这里简化为idle）
+                 // 实际上需要判断点击区域，如果是空白处才收起
+                 if(!e.target.closest('.island-music')) {
+                     transformIsland('idle');
+                 }
+            } else {
+                transformIsland('music');
+            }
+        }
+
+        function transformIsland(state) {
+            const island = document.getElementById('dynamic-island');
+            const targets = {
+                'idle': island.querySelector('.island-idle'),
+                'music': island.querySelector('.island-music'),
+                'wishing': island.querySelector('.island-wishing'),
+                'alert': island.querySelector('.island-alert'),
+                'levelup': island.querySelector('.island-levelup'), 
+                'message': island.querySelector('.island-message') 
+            };
+            const activeEl = targets[state] || targets['idle'];
+
+            // 尺寸控制
+            if (state === 'music') { island.classList.add('expanded'); island.style.width = '380px'; }
+            else if (state === 'wishing' || state === 'message') { island.classList.add('expanded'); island.style.width = '240px'; }
+            else if (state === 'alert' || state === 'levelup') { 
+                island.classList.add('expanded'); island.style.width = '280px';
+                setTimeout(() => { 
+                    if (activeEl.style.display !== 'none') {
+                        transformIsland('idle'); 
+                    }
+                }, 3000); 
+            } else { island.classList.remove('expanded'); island.style.width = ''; }
+
+            // 互斥显示
+            Object.values(targets).forEach(el => {
+                if (el === activeEl) {
+                    gsap.killTweensOf(el); el.style.display = 'flex';
+                    gsap.to(el, { opacity: 1, duration: 0.3, delay: 0.1 });
+                } else {
+                    gsap.killTweensOf(el);
+                    if(el.style.display !== 'none') gsap.to(el, { opacity: 0, duration: 0.2, onComplete: () => { if (el !== activeEl) el.style.display = 'none'; }});
+                }
+            });
+        }
+
+        // --- 6. 开启旅程 ---
+        function startJourney() {
+            const audio = document.getElementById('bgMusic');
+            const noteIcon = document.getElementById('island-music-note');
+            
+            transformIsland('levelup'); 
+            
+            setTimeout(() => { transformIsland('music'); }, 2500);
+
+            // 播放
+            audio.play().then(() => {
+                noteIcon.classList.add('music-playing');
+                noteIcon.style.transform = 'none';
+            }).catch(e => { console.log("Audio prevented"); });
+
+            gsap.to("#intro-screen", { 
+                opacity: 0, duration: 1.5, ease: "power2.inOut", 
+                onComplete: () => { document.getElementById('intro-screen').style.display = 'none'; }
+            });
+        }
+
+        function moveOrbs() {
+            gsap.to(".orb-1", { x: "20%", y: "15%", duration: 6, repeat: -1, yoyo: true, ease: "sine.inOut" });
+            gsap.to(".orb-2", { x: "-15%", y: "-20%", duration: 5, repeat: -1, yoyo: true, ease: "sine.inOut" });
+        }
+        moveOrbs();
+
+        function triggerSalute(type) {
+            let colors = type === 'newyear' ? ['#FFD700', '#8B0000', '#FF4500', '#FFFFFF'] : ['#0abab5', '#ff69b4', '#7000ff', '#ffd700'];
+            let count = 0;
+            const interval = setInterval(() => {
+                confetti({ particleCount: 150, spread: 80, origin: { x: 0, y: 0.8 }, colors, angle: 60, startVelocity: 60 });
+                confetti({ particleCount: 150, spread: 80, origin: { x: 1, y: 0.8 }, colors, angle: 120, startVelocity: 60 });
+                count++; if(count >= (type==='newyear'?12:6)) clearInterval(interval);
+            }, 300);
+        }
+
+        // --- 7. 许愿与麦克风吹气 ---
+        let audioContext, analyser, microphone, dataArray;
+        let isBlowing = false;
+        let micStream;
+
+        function showWishScreen(type) {
+            const ws = document.getElementById('wish-screen');
+            const title = document.getElementById('wish-title');
+            const btn = document.getElementById('wish-submit-btn');
+            
+            transformIsland('wishing'); 
+
+            if(type === 'birthday') {
+                title.innerText = "MAKE A BIRTHDAY WISH"; title.style.color = "white";
+                btn.innerText = "准备吹蜡烛"; 
+                btn.onclick = () => submitBirthdayWish();
+            } else {
+                title.innerText = "新年愿望"; title.style.color = "#FFFF00";
+                btn.innerText = "寄出愿望";
+                btn.onclick = () => submitNewYearWish();
+            }
+            ws.style.display = 'flex';
+            gsap.to(ws, { opacity: 1, duration: 0.8 });
+        }
+
+        function submitBirthdayWish() {
+            const val = document.getElementById('wish-input').value.trim();
+            if (val) {
+                birthdayWishes.unshift(`🎂 ${val}`);
+                
+                // 收起输入框
+                gsap.to("#wish-screen", { 
+                    opacity: 0, duration: 0.5, 
+                    onComplete: () => {
+                        document.getElementById('wish-screen').style.display = 'none';
+                        document.getElementById('wish-input').value = "";
+                        
+                        // 启动麦克风吹气流程
+                        startBlowSequence();
+                    }
+                });
+            }
+        }
+
+        async function startBlowSequence() {
+            const hint = document.getElementById('blow-hint');
+            hint.innerHTML = "请对着麦克风吹气<br><span style='font-size:0.8em; opacity:0.8; margin-top:5px; display:block;'>(或者点击屏幕直接吹灭)</span>";
+            hint.style.opacity = '1';
+            
+            // 启用备用点击方案
+            setTimeout(() => { document.addEventListener('click', blowClickHandler); }, 100);
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+
+            try {
+                micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(micStream);
+                microphone.connect(analyser);
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                
+                isBlowing = false;
+                detectBlowLoop();
+            } catch(err) {
+                console.log("Mic access denied or error", err);
+            }
+        }
+
+        function blowClickHandler() { finishBlow(); }
+
+        function detectBlowLoop() {
+            if(isBlowing) return;
+            requestAnimationFrame(detectBlowLoop);
+            if(!analyser) return;
+
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for(let i=0; i<dataArray.length; i++) sum += dataArray[i];
+            let average = sum / dataArray.length;
+            
+            const flame = document.getElementById('flame');
+            
+            if (average > 10) {
+                const scaleY = 1 - (average / 250); 
+                const skew = (Math.random() * 30 - 15) * (average / 50);
+                gsap.set(flame, { skewX: skew, scaleY: scaleY, opacity: 1 - (average/400) });
+            } else {
+                gsap.set(flame, { skewX: 0, scaleY: 1, opacity: 1 });
+            }
+            
+            if (average > 60) finishBlow();
+        }
+
+        function finishBlow() {
+            if(isBlowing) return; 
+            isBlowing = true;
+            document.removeEventListener('click', blowClickHandler);
+
+            if(micStream) micStream.getTracks().forEach(track => track.stop());
+            if(audioContext && audioContext.state !== 'closed') audioContext.close();
+
+            document.getElementById('blow-hint').style.opacity = '0';
+            
+            gsap.to("#flame", { 
+                scale: 0, opacity: 0, duration: 0.4, ease: "power2.in",
+                onComplete: () => {
+                    gsap.to("#dynamic-island", { scale: 1.2, duration: 0.3, yoyo: true, repeat: 1 });
+                    const alertText = document.getElementById('alert-text');
+                    const alertIcon = document.getElementById('alert-icon');
+                    alertText.innerText = "WISH RECEIVED";
+                    alertIcon.innerText = "✦";
+                    transformIsland('alert');
+                    triggerSalute('birthday');
+
+                    gsap.to("#ceremony-content", { 
+                        opacity: 0, duration: 0.8, 
+                        onComplete: () => {
+                            document.getElementById('ceremony-content').style.display = 'none';
+                            document.getElementById('finale-wrapper').style.display = 'flex';
+                            gsap.fromTo("#final-title", { scale: 0.5, opacity: 0, y: 30 }, { scale: 1, opacity: 1, y: 0, duration: 1.2, ease: "back.out(1.7)" });
+                            gsap.to("#finale-wrapper", { opacity: 1, duration: 1 });
+                            setTimeout(() => { gsap.to("#egg-zone", { opacity: 1, y: 0, duration: 1 }); }, 2000);
+                        }
+                    });
+                }
+            });
+        }
+
+        function submitNewYearWish() {
+            const val = document.getElementById('wish-input').value.trim();
+            if(val) newYearWishes.unshift(`🧧 ${val}`);
+            gsap.to("#wish-screen", { opacity: 0, duration: 0.5, onComplete: () => {
+                document.getElementById('wish-screen').style.display = 'none';
+                ScrollTrigger.getAll().forEach(t => t.kill());
+                gsap.to(":root", { "--c1": "#8B0000", "--c2": "#FFD700", "--c3": "#FF4500", duration: 3 });
+                triggerSalute('newyear');
+                const title = document.getElementById('final-title');
+                title.innerHTML = "HAPPY BIRTHDAY<br><span>& HAPPY NEW YEAR</span>";
+                gsap.fromTo(title, { scale: 0.8, filter: "blur(10px)" }, { scale: 1, filter: "blur(0px)", duration: 1.5, ease: "elastic.out(1, 0.5)" });
+                document.getElementById('egg-zone').style.display = 'none';
+                document.getElementById('restart-zone').style.display = 'block';
+            }});
+        }
+
+        // --- 8. 数据与弹窗 ---
+        const animHTML = {
+            messages: `<div class="env-wrapper"><div class="anim-envelope-back"></div><div class="anim-letter"><div style="font-size:0.6rem; opacity:0.3; margin-bottom:5px;">A LETTER FOR YOU</div><div style="width:100%;height:2px;background:#ddd;"></div><div style="width:100%;height:2px;background:#ddd;"></div><div style="width:60%;height:2px;background:#ddd;"></div></div><div class="anim-envelope-front"></div><div class="anim-flap"></div></div>`,
+            memoirs: `<div class="anim-book"><div class="anim-page-stack"></div><div class="anim-cover">${USER_CONFIG.info.age}</div></div>`,
+            wishes: `<div class="anim-candle"><div class="anim-flame"></div></div>`
+        };
+
+        const overlayData = {
+            memoirs: () => {
+                // 动态生成照片墙
+                const photosHTML = USER_CONFIG.media.photos.map(p => 
+                    `<div class="photo-card" onclick="viewImage('${p.src}')" style="background-image: url('${p.src}')"><span>${p.text}</span></div>`
+                ).join('');
+                return `<div class="photo-grid-container">${photosHTML}</div>`;
+            },
+            messages: () => `<div style="display:flex; flex-direction:column; gap:20px; max-width:800px; margin:100px auto;"><div style="background:var(--glass-bg); padding:40px; border-radius:30px; border:1px solid var(--border); font-size: 1.2rem; line-height: 1.8;">“${USER_CONFIG.text.friendGreeting.replace(/\n/g, '<br/>')}”</div></div>`,
+            wishes: () => `<div style="display:flex; flex-direction:column; gap:20px; max-width:800px; margin:100px auto;">
+                    <h3 style="color:var(--pink); font-family:'Playfair Display';">Birthday Wishes</h3>
+                    ${birthdayWishes.map(w => `<div style="background:var(--glass-bg); padding:20px; border-radius:15px; border:1px solid var(--border);">${w}</div>`).join('')}
+                    <h3 style="color:#FFFF00; font-family:'Playfair Display'; margin-top:30px;">New Year Wishes</h3>
+                    ${newYearWishes.map(w => `<div style="background:var(--glass-bg); padding:20px; border-radius:15px; border:1px solid var(--border);">${w}</div>`).join('')}
+                </div>`
+        };
+
+        function viewImage(src) {
+            const viewer = document.getElementById('image-viewer');
+            const img = document.getElementById('image-viewer-img');
+            img.src = src;
+            viewer.style.display = 'flex';
+            setTimeout(() => viewer.classList.add('active'), 10);
+        }
+
+        function closeImageViewer() {
+            const viewer = document.getElementById('image-viewer');
+            viewer.classList.remove('active');
+            setTimeout(() => {
+                viewer.style.display = 'none';
+                document.getElementById('image-viewer-img').src = "";
+            }, 300);
+        }
+
+        function openOverlay(type) {
+            const overlay = document.getElementById('overlay');
+            const stage = document.getElementById('anim-stage');
+            const content = document.getElementById('overlay-content');
+            content.style.opacity = '0';
+            content.innerHTML = overlayData[type]();
+            overlay.style.display = 'block';
+            gsap.to(overlay, { opacity: 1, duration: 0.5 });
+            stage.innerHTML = animHTML[type] || "";
+
+            const tl = gsap.timeline({ onComplete: () => {
+                gsap.to(stage.children, { opacity: 0, duration: 0.5, onComplete: () => stage.innerHTML = "" });
+                gsap.to(content, { opacity: 1, duration: 0.8 });
+            }});
+
+            if (type === 'messages') {
+                tl.from(".env-wrapper", { scale: 0, rotate: -5, duration: 0.7, ease: "back.out(1.7)" })
+                  .to(".anim-flap", { rotateX: 180, duration: 0.6, ease: "power2.inOut" })
+                  .to(".anim-letter", { y: -140, duration: 0.9, ease: "power2.out", onStart: function() { gsap.set(".anim-letter", { zIndex: 10 }); } }, "-=0.2");
+            } else if (type === 'memoirs') {
+                tl.from(".anim-book", { x: -100, opacity: 0, duration: 0.7, ease: "power2.out" })
+                  .to(".anim-cover", { rotateY: -155, duration: 1.2, ease: "power2.inOut" })
+                  .to(".anim-book", { scale: 1.2, opacity: 0, duration: 0.6 }, "-=0.2");
+            } else if (type === 'wishes') {
+                tl.from(".anim-candle", { y: 100, opacity: 0, duration: 0.6 })
+                  .from(".anim-flame", { scale: 0, duration: 0.4, ease: "back.out(2)" })
+                  .to(".anim-flame", { scale: 1.5, filter: "blur(10px)", opacity: 0, duration: 0.8, delay: 0.5 });
+            }
+        }
+
+        function closeOverlay() { 
+            gsap.to("#overlay", { opacity: 0, duration: 0.5, onComplete: () => {
+                document.getElementById('overlay').style.display = 'none';
+            }}); 
+        }
+        
+        // --- 9. 高级交互 ---
+        const magnets = document.querySelectorAll('.btn-glass, .btn-hub, .disc, .apple-btn');
+        magnets.forEach((magnet) => {
+            magnet.addEventListener('mousemove', (e) => {
+                const rect = magnet.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                gsap.to(magnet, { x: x * 0.2, y: y * 0.2, duration: 0.3, ease: "power2.out" });
+            });
+            magnet.addEventListener('mouseleave', (e) => {
+                gsap.to(magnet, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" });
+            });
+        });
+
+        ScrollTrigger.create({
+            trigger: ".hub-grid", 
+            start: "top center", once: true,
+            onEnter: () => {
+                const island = document.getElementById('dynamic-island');
+                if (!island.classList.contains('expanded') || island.querySelector('.island-idle').style.display !== 'none') {
+                    transformIsland('message');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
